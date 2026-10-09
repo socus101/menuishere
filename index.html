@@ -1,0 +1,1432 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Brew Haven</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Thai:wght@300;400;500;600&family=Noto+Serif+Thai:wght@500;600;700&family=Playfair+Display:ital,wght@0,600;1,400&family=Srisakdi:wght@400;700&display=swap" rel="stylesheet" />
+  <style>
+    :root {
+      --bg: #0c0a08;
+      --card: #16120e;
+      --gold: #c9a36a;
+      --cream: #f3ead8;
+      --muted: #8d7d6b;
+      --line: rgba(201, 163, 106, 0.22);
+      --green: #1f9d55;
+      --serif: "Noto Serif Thai", "Playfair Display", serif;
+      --sans: "IBM Plex Sans Thai", sans-serif;
+      --script: "Srisakdi", cursive;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: var(--sans);
+      background: var(--bg);
+      color: #d8cbb8;
+      line-height: 1.7;
+      min-height: 100vh;
+    }
+    img { max-width: 100%; display: block; }
+    a { color: inherit; text-decoration: none; }
+    button, input, textarea { font-family: inherit; }
+    .wrap { width: min(1180px, calc(100% - 40px)); margin: 0 auto; }
+    .hidden { display: none !important; }
+
+    .brand {
+      text-align: center;
+      padding: 32px 0 8px;
+      font-family: "Playfair Display", serif;
+      color: var(--cream);
+      letter-spacing: 3px;
+      font-size: 22px;
+    }
+    .db-pill {
+      display: inline-block;
+      margin-top: 8px;
+      font-family: var(--sans);
+      letter-spacing: 0;
+      font-size: 12px;
+      border: 1px solid var(--line);
+      border-radius: 999px;
+      padding: 4px 10px;
+    }
+    .db-pill.on { color: #9ee0b4; border-color: #2e5a3a; }
+    .db-pill.off { color: #e0a0a0; border-color: #8a3a3a; }
+    .note-banner {
+      width: min(760px, calc(100% - 40px));
+      margin: 14px auto 0;
+      background: rgba(201,163,106,.12);
+      border: 1px solid var(--line);
+      color: var(--cream);
+      border-radius: 14px;
+      padding: 12px 16px;
+      font-family: var(--sans);
+      letter-spacing: 0;
+      font-size: 15px;
+    }
+
+    .menu { padding: 24px 0 20px; text-align: center; }
+    .script { font-family: var(--script); color: var(--gold); font-size: 28px; }
+    h2 {
+      font-family: var(--serif);
+      font-size: clamp(32px, 4vw, 46px);
+      color: var(--cream);
+      margin: 4px 0 28px;
+      font-weight: 600;
+    }
+    .cards {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 18px;
+      text-align: left;
+    }
+    .card {
+      background: var(--card);
+      border: 1px solid rgba(201,163,106,.16);
+      border-radius: 16px;
+      padding: 16px;
+      transition: 0.25s ease;
+      position: relative;
+    }
+    .card:hover { transform: translateY(-6px); border-color: rgba(201,163,106,.4); }
+    .pic { height: 180px; border-radius: 12px; overflow: hidden; margin-bottom: 14px; background: #211a14; }
+    .pic img { width: 100%; height: 100%; object-fit: cover; }
+    .card h3 { font-family: var(--serif); color: var(--cream); font-size: 20px; }
+    .card p { color: var(--muted); font-size: 13.5px; margin: 6px 0 12px; min-height: 44px; }
+    .price-row { display: flex; align-items: baseline; gap: 8px; margin-bottom: 12px; }
+    .price { color: var(--gold); font-weight: 600; font-size: 20px; }
+    .price.sale { color: #6ee7a0; }
+    .old-price { color: var(--muted); text-decoration: line-through; font-size: 14px; }
+    .pop-badge, .sale-badge {
+      position: absolute; top: 24px; left: 24px;
+      background: linear-gradient(180deg, #c4a06a, #9a7544);
+      color: #1a120c;
+      font-size: 11px;
+      padding: 3px 8px;
+      border-radius: 999px;
+      font-weight: 600;
+    }
+    .sale-badge { left: auto; right: 24px; background: #1f9d55; color: #fff; }
+    .pick-btn {
+      width: 100%;
+      padding: 14px 18px;
+      border: 0;
+      border-radius: 12px;
+      background: var(--green);
+      color: #fff;
+      font-size: 17px;
+      font-weight: 600;
+      cursor: pointer;
+    }
+    .pick-btn:hover { background: #178a48; }
+
+    .order-sec { padding: 30px 0 70px; text-align: center; }
+    .label { color: var(--gold); font-size: 13px; letter-spacing: 2px; }
+    .order-grid, .staff-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 28px;
+      text-align: left;
+      background: #14110e;
+      border: 1px solid var(--line);
+      border-radius: 18px;
+      padding: 28px;
+    }
+    .cart-list { display: grid; gap: 12px; }
+    .cart-item {
+      display: flex; justify-content: space-between; gap: 10px;
+      align-items: center;
+      border-bottom: 1px solid rgba(201,163,106,.12);
+      padding-bottom: 10px;
+    }
+    .qty { display: flex; align-items: center; gap: 8px; }
+    .qty button {
+      width: 26px; height: 26px; border-radius: 50%;
+      border: 1px solid var(--line); background: transparent; color: var(--cream); cursor: pointer;
+    }
+    .total { color: var(--gold); font-size: 20px; font-weight: 600; margin-top: 8px; }
+    .empty { color: var(--muted); }
+    form { display: grid; gap: 12px; }
+    input, textarea, select {
+      width: 100%;
+      background: #1a1511;
+      border: 1px solid var(--line);
+      border-radius: 12px;
+      color: var(--cream);
+      padding: 12px 14px;
+      outline: none;
+    }
+    textarea { min-height: 90px; resize: vertical; }
+    .err { color: #e0a0a0; font-size: 13px; }
+    .btn, .btn-ghost, .btn-danger, .btn-ok, .btn-send {
+      cursor: pointer;
+      border-radius: 999px;
+      font-weight: 500;
+    }
+    .btn {
+      border: 0;
+      padding: 12px 22px;
+      background: linear-gradient(180deg, #c4a06a, #9a7544);
+      color: #1a120c;
+    }
+    .btn:hover { filter: brightness(1.08); }
+    .btn:disabled { opacity: .45; cursor: not-allowed; filter: none; }
+    .btn-ghost {
+      background: transparent;
+      color: var(--cream);
+      border: 1px solid var(--line);
+      padding: 8px 14px;
+    }
+    .btn-ok { border: 0; padding: 8px 14px; background: #2e5a3a; color: #d9f5e3; }
+    .btn-send { border: 0; padding: 8px 14px; background: #3d4f78; color: #dce6ff; }
+    .btn-danger {
+      border: 1px solid #8a3a3a;
+      background: transparent;
+      color: #e0a0a0;
+      padding: 8px 14px;
+    }
+
+    .lookup-box {
+      margin-top: 22px;
+      padding: 18px;
+      border: 2px solid #1f9d55;
+      background: rgba(31,157,85,.12);
+      border-radius: 16px;
+      animation: glow 2.4s ease-in-out infinite;
+    }
+    .lookup-box.flash { box-shadow: 0 0 0 6px rgba(31,157,85,.28); }
+    @keyframes glow {
+      0%, 100% { box-shadow: 0 0 0 0 rgba(31,157,85,.15); }
+      50% { box-shadow: 0 0 0 6px rgba(31,157,85,.18); }
+    }
+    .lookup { display: flex; gap: 8px; flex-wrap: wrap; }
+    .lookup input { flex: 1; min-width: 160px; background: #102318; border-color: #1f9d55; }
+    .lookup-btn {
+      border: 0;
+      background: #1f9d55;
+      color: #fff;
+      font-size: 18px;
+      font-weight: 700;
+      padding: 14px 24px;
+      border-radius: 12px;
+      cursor: pointer;
+      min-width: 160px;
+    }
+    .lookup-btn:hover { background: #178a48; }
+    .filter-row { display: flex; gap: 8px; margin-top: 18px; flex-wrap: wrap; }
+    .filter-row input { flex: 1; min-width: 140px; }
+    .track { margin-top: 28px; display: grid; gap: 14px; }
+    .track-card, .order, .menu-row {
+      text-align: left;
+      background: var(--card);
+      border: 1px solid var(--line);
+      border-radius: 16px;
+      padding: 18px;
+    }
+    .badge {
+      display: inline-block;
+      border-radius: 999px;
+      padding: 4px 12px;
+      font-size: 13px;
+      margin: 6px 0 10px;
+    }
+    .s-pending { background: #3a2e18; color: var(--gold); }
+    .s-making { background: #3a2714; color: #f0c27a; }
+    .s-delivering { background: #1d2f40; color: #9ec9f0; }
+    .s-done { background: #1c3526; color: #9ee0b4; }
+    .s-cancelled { background: #3a1c1c; color: #e0a0a0; }
+    .msgs { margin-top: 10px; display: grid; gap: 6px; }
+    .msg { background: #1a1511; border-radius: 10px; padding: 8px 10px; color: var(--cream); font-size: 14px; }
+
+    .staff-top {
+      display: flex; justify-content: space-between; align-items: center;
+      padding: 22px 0 10px;
+      gap: 12px; flex-wrap: wrap;
+    }
+    .staff-top h1 { font-family: var(--serif); color: var(--cream); font-size: 28px; }
+    .tabs { display: flex; gap: 8px; margin: 8px 0 18px; flex-wrap: wrap; }
+    .tab {
+      border: 1px solid var(--line);
+      background: transparent;
+      color: var(--cream);
+      padding: 8px 16px;
+      border-radius: 999px;
+      cursor: pointer;
+    }
+    .tab.on {
+      background: linear-gradient(180deg, #c4a06a, #9a7544);
+      color: #1a120c;
+      border-color: transparent;
+    }
+    .orders, .menu-admin { display: grid; gap: 16px; padding-bottom: 60px; }
+    .order-head { display: flex; justify-content: space-between; gap: 12px; flex-wrap: wrap; }
+    .actions, .menu-actions { display: flex; flex-wrap: wrap; gap: 8px; margin: 14px 0 0; }
+    .chat-row { display: flex; gap: 8px; margin-top: 8px; }
+    .chat-row input { flex: 1; }
+    .meta { color: var(--muted); font-size: 14px; }
+    .thanks {
+      text-align: center;
+      color: #6f6254;
+      font-size: 13px;
+      padding: 8px 0 28px;
+      user-select: none;
+    }
+    .check { display: flex; align-items: center; gap: 8px; color: var(--cream); font-size: 14px; }
+    .check input { width: auto; }
+    .thumb { width: 72px; height: 72px; object-fit: cover; border-radius: 10px; background: #211a14; }
+    .menu-row { display: grid; grid-template-columns: 72px 1fr; gap: 14px; align-items: center; cursor: grab; }
+    .preview { width: 100%; height: 140px; object-fit: cover; border-radius: 12px; background: #211a14; display: none; }
+    .off-tag { color: #e0a0a0; font-size: 12px; }
+    .staff-box {
+      background: #14110e;
+      border: 1px solid var(--line);
+      border-radius: 16px;
+      padding: 18px;
+      margin-bottom: 16px;
+      display: grid;
+      gap: 10px;
+    }
+    .open-row { display: flex; gap: 10px; align-items: center; flex-wrap: wrap; }
+
+    .float-cart {
+      position: fixed;
+      right: 22px;
+      bottom: 22px;
+      width: 84px;
+      height: 84px;
+      border: 0;
+      border-radius: 50%;
+      background: linear-gradient(180deg, #d4b07a, #9a7544);
+      color: #1a120c;
+      font-size: 40px;
+      box-shadow: 0 14px 32px rgba(0,0,0,.5);
+      cursor: pointer;
+      z-index: 35;
+      display: grid;
+      place-items: center;
+    }
+    .float-cart b {
+      position: absolute;
+      top: 6px;
+      right: 6px;
+      min-width: 26px;
+      height: 26px;
+      padding: 0 6px;
+      background: #e11d48;
+      color: #fff;
+      border-radius: 999px;
+      font-size: 13px;
+      display: grid;
+      place-items: center;
+      font-weight: 700;
+    }
+    @keyframes cartpop {
+      0% { transform: scale(.5); opacity: 0; }
+      70% { transform: scale(1.12); opacity: 1; }
+      100% { transform: scale(1); }
+    }
+    .float-cart.pop { animation: cartpop .35s ease; }
+
+    .modal {
+      position: fixed; inset: 0;
+      background: rgba(0,0,0,.72);
+      display: grid; place-items: center;
+      z-index: 40;
+      padding: 20px;
+    }
+    .modal-box {
+      width: min(440px, 100%);
+      background: #16120e;
+      border: 1px solid var(--line);
+      border-radius: 18px;
+      padding: 28px;
+    }
+    .modal-box h3 { font-family: var(--serif); color: var(--cream); font-size: 26px; margin-bottom: 10px; }
+    .how {
+      margin-top: 12px;
+      background: rgba(31,157,85,.12);
+      border: 1px solid #1f9d55;
+      border-radius: 12px;
+      padding: 12px;
+      color: var(--cream);
+      font-size: 14px;
+    }
+
+    .toast {
+      position: fixed; bottom: 24px; left: 50%;
+      transform: translateX(-50%) translateY(20px);
+      background: #2a2118; color: var(--cream);
+      border: 1px solid var(--gold);
+      padding: 10px 18px; border-radius: 999px;
+      opacity: 0; pointer-events: none; transition: .3s ease; z-index: 50;
+    }
+    .toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+
+    @media (max-width: 980px) { .cards { grid-template-columns: 1fr 1fr; } }
+    @media (max-width: 680px) {
+      .cards, .order-grid, .staff-grid, .menu-row { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+  <div id="page-customer">
+    <div class="brand">
+      <span id="shop-brand">BREW HAVEN</span>
+      <div class="db-pill off" id="db-pill">โหมดเครื่องนี้เท่านั้น</div>
+      <div class="note-banner hidden" id="note-banner"></div>
+    </div>
+
+    <section class="menu" id="popular-sec">
+      <div class="wrap">
+        <div class="script">ซิกเนเจอร์ของเรา</div>
+        <h2>เมนูยอดนิยม</h2>
+        <div class="cards" id="popular-cards"></div>
+      </div>
+    </section>
+    <section class="menu hidden" id="other-sec">
+      <div class="wrap">
+        <h2>เมนูทั้งหมด</h2>
+        <div class="cards" id="other-cards"></div>
+      </div>
+    </section>
+
+    <section class="order-sec" id="order">
+      <div class="wrap">
+        <div class="label" id="shop-label">Brew Haven Coffee Co.</div>
+        <h2>สั่งเมนู</h2>
+        <div class="order-grid">
+          <div>
+            <h3 style="color:var(--cream);font-family:var(--serif);margin-bottom:12px;">ตะกร้าของคุณ</h3>
+            <div class="cart-list" id="cart-box"></div>
+          </div>
+          <form id="order-form">
+            <input type="text" name="name" placeholder="ชื่อของคุณ" required />
+            <input type="tel" name="phone" id="order-phone" inputmode="numeric" maxlength="10" placeholder="เบอร์โทร 10 หลัก" required />
+            <div class="err hidden" id="phone-err">กรุณาใส่เบอร์โทรเป็นตัวเลขให้ครบ 9–10 หลัก และขึ้นต้นด้วย 0</div>
+            <textarea name="address" placeholder="ใส่ที่อยู่ของคุณ" required></textarea>
+            <button class="btn" type="submit" id="submit-btn">สั่งเมนู →</button>
+          </form>
+        </div>
+        <div class="lookup-box" id="lookup-box">
+          <form class="lookup" id="lookup-form">
+            <input type="tel" id="lookup-phone" inputmode="numeric" maxlength="10" placeholder="ใส่เบอร์โทร 10 หลักเพื่อดูสถานะออเดอร์" required />
+            <button class="lookup-btn" type="submit">ดูออเดอร์</button>
+          </form>
+          <div class="err hidden" id="lookup-err" style="margin-top:8px">กรุณาใส่เบอร์โทรเป็นตัวเลขให้ครบ</div>
+        </div>
+        <div class="track" id="my-orders"></div>
+      </div>
+    </section>
+    <div class="thanks" id="thanks-link">ขอบคุณที่ใช้บริการ</div>
+  </div>
+
+  <div id="page-staff" class="hidden">
+    <div class="wrap">
+      <div class="staff-top">
+        <h1>หน้าพนักงาน</h1>
+        <div style="display:flex;gap:8px;flex-wrap:wrap">
+          <button class="btn-ok" id="backup-btn" type="button">สำรองไฟล์ JSON</button>
+          <label class="btn-ghost" style="cursor:pointer">กู้คืน JSON
+            <input type="file" id="restore-file" accept="application/json" class="hidden" />
+          </label>
+          <button class="btn-ghost" id="logout-btn" type="button">ออกจากระบบ</button>
+          <a class="btn-ghost" href="#customer">← หน้าลูกค้า</a>
+        </div>
+      </div>
+
+      <div class="tabs" id="tabs"></div>
+      <div id="tab-orders" class="orders"></div>
+      <div id="tab-trash" class="orders hidden"></div>
+      <div id="tab-archive" class="orders hidden"></div>
+      <div id="tab-menu" class="menu-admin hidden">
+        <div class="staff-grid">
+          <form id="menu-form">
+            <h3 id="menu-form-title" style="color:var(--cream);font-family:var(--serif)">เพิ่มเมนูใหม่</h3>
+            <input type="hidden" name="id" />
+            <input type="text" name="name" placeholder="ชื่อเมนู" required />
+            <textarea name="desc" placeholder="รายละเอียดเมนู" required></textarea>
+            <input type="number" name="price" placeholder="ราคา (บาท)" min="1" step="1" required />
+            <input type="number" name="discount" placeholder="ส่วนลด (บาท) ไม่ใส่ = ไม่ลด" min="0" step="1" />
+            <input type="url" name="img" placeholder="ลิงก์รูปภาพ (ถ้ามี)" />
+            <input type="file" name="file" accept="image/*" />
+            <img class="preview" id="img-preview" alt="ตัวอย่างรูป" />
+            <label class="check"><input type="checkbox" name="popular" /> ติดเป็นเมนูยอดนิยม</label>
+            <label class="check"><input type="checkbox" name="open" checked /> เปิดขายบนหน้าร้าน</label>
+            <div style="display:flex;gap:8px;flex-wrap:wrap">
+              <button class="btn" type="submit" id="menu-save">บันทึกเมนู</button>
+              <button class="btn-ghost hidden" type="button" id="menu-cancel">ยกเลิก</button>
+            </div>
+          </form>
+          <div>
+            <h3 style="color:var(--cream);font-family:var(--serif);margin-bottom:12px;">ลำดับบนหน้าร้าน</h3>
+            <label class="check" style="margin-bottom:12px">
+              <input type="checkbox" id="show-popular" checked />
+              เปิดหมวดเมนูยอดนิยมบนหน้าร้าน
+            </label>
+            <p class="meta" style="margin-bottom:12px">ลากรายการหรือกดขึ้น/ลง เพื่อจัดวาง</p>
+            <div id="menu-list" class="orders"></div>
+          </div>
+        </div>
+      </div>
+
+      <div id="tab-settings" class="menu-admin hidden">
+        <div class="staff-box">
+          <form id="note-form">
+            <b style="color:var(--cream)">อยากจะบอกอะไรลูกค้า</b>
+            <textarea id="customer-note" placeholder="เช่น วันนี้มีโปรเครื่องดื่มเย็น ลด 10 บาท"></textarea>
+            <button class="btn" type="submit">บันทึกข้อความ</button>
+          </form>
+        </div>
+        <div class="staff-box">
+          <div class="open-row">
+            <b style="color:var(--cream)">สถานะร้าน</b>
+            <span class="badge" id="open-state">ร้านเปิดอยู่</span>
+            <button class="btn-danger" id="toggle-open" type="button">ปิดร้าน</button>
+          </div>
+          <form id="close-form">
+            <div class="meta">รายละเอียดตอนปิดร้าน (ลูกค้าจะเห็นเมื่อร้านปิด)</div>
+            <textarea id="close-detail" placeholder="เช่น ปิดทำการวันจันทร์ เปิดอีกครั้งวันอังคาร 08:00 น."></textarea>
+            <button class="btn" type="submit">บันทึกรายละเอียดปิดร้าน</button>
+          </form>
+        </div>
+        <div class="staff-box">
+          <form id="shop-form">
+            <b style="color:var(--cream)">ชื่อร้าน</b>
+            <input id="shop-name-input" placeholder="ชื่อร้าน" />
+            <button class="btn" type="submit">บันทึกชื่อร้าน</button>
+          </form>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <button class="float-cart hidden" id="float-cart" type="button" title="ไปที่ตะกร้า">🛒<b id="cart-count">0</b></button>
+
+  <div class="modal hidden" id="login-modal">
+    <form class="modal-box" id="login-form">
+      <h3>เข้าหน้าพนักงาน</h3>
+      <p class="meta" style="margin-bottom:14px">ใส่รหัสผ่านเพื่อจัดการออเดอร์และเมนู</p>
+      <input type="password" id="login-pass" placeholder="รหัสผ่าน" required />
+      <div style="display:flex;gap:8px;margin-top:8px">
+        <button class="btn" type="submit">เข้าสู่ระบบ</button>
+        <button class="btn-ghost" type="button" id="login-cancel">ยกเลิก</button>
+      </div>
+    </form>
+  </div>
+
+  <div class="modal hidden" id="ok-modal">
+    <div class="modal-box">
+      <h3>สั่งสินค้าเสร็จสิ้น</h3>
+      <p>คุณสามารถดูรายการคำสั่งของคุณตรงนี้</p>
+      <div class="how">
+        <b>[วิธีการดู]</b> ให้คุณกรอกเบอร์โทรที่คุณระบุในออเดอร์ลงไปในช่องนี้ แล้วกดดูออเดอร์ รายการของคุณจะปรากฏขึ้นมา
+      </div>
+      <button class="lookup-btn" id="ok-gotit" type="button" style="margin-top:16px;width:100%">ไปที่ดูออเดอร์</button>
+    </div>
+  </div>
+
+  <div class="modal hidden" id="closed-modal">
+    <div class="modal-box">
+      <h3>ตอนนี้ร้านปิดอยู่</h3>
+      <p id="closed-text" class="how"></p>
+      <button class="btn" id="closed-ok" type="button" style="margin-top:16px">รับทราบ</button>
+    </div>
+  </div>
+
+  <div class="toast" id="toast"></div>
+
+  <script>
+    const CONFIG = {
+      owner: "YOUR_USERNAME",
+      repo: "YOUR_REPO",
+      branch: "main",
+      path: "db/orders.json",
+      token: "YOUR_TOKEN",
+      staffPassword: "haven2026"
+    };
+
+    const LOCAL_KEY = "brewhaven_db_v1";
+    const CART_KEY = "brewhaven_cart_v1";
+    const PHONE_KEY = "brewhaven_phone_v1";
+    const AUTH_KEY = "brewhaven_staff_ok";
+    const DEFAULT_MENU = [
+      { id: "latte", name: "ไอซ์ คาราเมล ลาเต้", desc: "เอสเพรสโซนุ่มนวล ผสมคาราเมลและนมเย็น", price: 149, discount: 0, img: "https://images.unsplash.com/photo-1461023058943-07fcbe16d735?auto=format&fit=crop&w=600&q=80", popular: true, open: true, sort: 0 },
+      { id: "capp", name: "คาปูชิโน", desc: "คาปูชิโนคลาสสิก ฟองนมนุ่ม รสเข้มข้น", price: 129, discount: 0, img: "https://images.unsplash.com/photo-1572442388796-11668a67e53d?auto=format&fit=crop&w=600&q=80", popular: true, open: true, sort: 1 },
+      { id: "mocha", name: "โมคา", desc: "เอสเพรสโซผสานช็อกโกแลตและนมร้อน", price: 139, discount: 0, img: "https://images.unsplash.com/photo-1572490122747-3968b75cc699?auto=format&fit=crop&w=600&q=80", popular: true, open: true, sort: 2 },
+      { id: "esp", name: "เอสเพรสโซ", desc: "เอสเพรสโซเข้มข้น จัดจ้าน รสชาติแท้", price: 99, discount: 0, img: "https://images.unsplash.com/photo-1510591509098-f4fdc6d0ff04?auto=format&fit=crop&w=600&q=80", popular: true, open: true, sort: 3 }
+    ];
+    const STATUS = {
+      pending: { text: "รอรับออเดอร์", cls: "s-pending" },
+      making: { text: "กำลังทำ", cls: "s-making" },
+      delivering: { text: "กำลังส่ง", cls: "s-delivering" },
+      done: { text: "ส่งเสร็จแล้ว", cls: "s-done" },
+      cancelled: { text: "ยกเลิกออเดอร์", cls: "s-cancelled" }
+    };
+
+    const useGithub = CONFIG.token && !CONFIG.token.startsWith("YOUR_") && !CONFIG.owner.startsWith("YOUR_");
+    let cache = { orders: [], menu: DEFAULT_MENU.map((m) => Object.assign({}, m)), settings: { showPopular: true, shopName: "BREW HAVEN", shopOpen: true, customerNote: "", closeDetail: "ร้านปิดทำการชั่วคราว กรุณากลับมาใหม่ภายหลัง" } };
+    let fileSha = null;
+    let writing = false;
+    let dragId = null;
+    let currentTab = "orders";
+    let archFrom = "";
+    let archTo = "";
+    let secretClicks = 0;
+
+    const $ = (id) => document.getElementById(id);
+    function ping(msg) {
+      const el = $("toast");
+      el.textContent = msg;
+      el.classList.add("show");
+      setTimeout(() => el.classList.remove("show"), 1800);
+    }
+    function esc(s) {
+      return String(s || "").replace(/[&<>"']/g, (c) => ({ "&":"&amp;","<":"&lt;",">":"&gt;","\"":"&quot;","'":"&#39;" }[c]));
+    }
+    function baht(n) { return "฿" + n; }
+    function normPhone(p) { return String(p || "").replace(/\D/g, ""); }
+    function validPhone(p) { return /^0\d{8,9}$/.test(normPhone(p)); }
+    function bindPhone(el, err) {
+      el.addEventListener("input", () => {
+        const start = el.selectionStart;
+        const old = el.value;
+        el.value = old.replace(/\D/g, "").slice(0, 10);
+        if (err) err.classList.add("hidden");
+        try { el.setSelectionRange(start, start); } catch (e) {}
+      });
+      el.addEventListener("keypress", (e) => {
+        if (!/[0-9]/.test(e.key)) e.preventDefault();
+      });
+      el.addEventListener("paste", (e) => {
+        e.preventDefault();
+        const text = (e.clipboardData || window.clipboardData).getData("text");
+        el.value = (el.value + text).replace(/\D/g, "").slice(0, 10);
+      });
+    }
+    function isStaff() { return sessionStorage.getItem(AUTH_KEY) === "1"; }
+    function shopName() { return (cache.settings && cache.settings.shopName) || "BREW HAVEN"; }
+    function isShopOpen() { return !cache.settings || cache.settings.shopOpen !== false; }
+    function sortedMenu() { return (cache.menu || []).slice().sort((a, b) => (a.sort || 0) - (b.sort || 0)); }
+    function finalPrice(m) { return Math.max(0, Number(m.price || 0) - Number(m.discount || 0)); }
+    function isOpen(m) { return m.open !== false; }
+    function orderBin(o) {
+      if (o.bin === "archive" || o.bin === "trash") return o.bin;
+      if (o.status === "done" || o.status === "cancelled") return "trash";
+      return "";
+    }
+    function safeImg(url) {
+      const u = String(url || "");
+      if (u.startsWith("https://") || u.startsWith("http://") || u.startsWith("data:image/")) return u;
+      return "https://images.unsplash.com/photo-1509042239860-f550ce710b41?auto=format&fit=crop&w=600&q=80";
+    }
+    function showClosed() {
+      $("closed-text").textContent = (cache.settings && cache.settings.closeDetail) || "ร้านปิดทำการชั่วคราว กรุณากลับมาใหม่ภายหลัง";
+      $("closed-modal").classList.remove("hidden");
+    }
+    function assertOpen() {
+      if (isShopOpen()) return true;
+      showClosed();
+      return false;
+    }
+    function renderBrand() {
+      const name = shopName();
+      $("shop-brand").textContent = name;
+      $("shop-label").textContent = name;
+      document.title = name;
+      const note = (cache.settings && cache.settings.customerNote || "").trim();
+      const banner = $("note-banner");
+      banner.textContent = note;
+      banner.classList.toggle("hidden", !note);
+      const open = isShopOpen();
+      $("open-state").textContent = open ? "ร้านเปิดอยู่" : "ร้านปิดอยู่";
+      $("open-state").className = "badge " + (open ? "s-done" : "s-cancelled");
+      $("toggle-open").textContent = open ? "ปิดร้าน" : "เปิดร้าน";
+      $("toggle-open").className = open ? "btn-danger" : "btn-ok";
+      if (document.activeElement !== $("customer-note")) $("customer-note").value = cache.settings.customerNote || "";
+      if (document.activeElement !== $("close-detail")) $("close-detail").value = cache.settings.closeDetail || "";
+      const sInput = $("shop-name-input");
+      if (sInput && document.activeElement !== sInput) sInput.value = name;
+      if (!open && location.hash !== "#staff") showClosed();
+      else if (open) $("closed-modal").classList.add("hidden");
+    }
+
+    function utf8ToB64(str) {
+      const bytes = new TextEncoder().encode(str);
+      let bin = "";
+      bytes.forEach((b) => { bin += String.fromCharCode(b); });
+      return btoa(bin);
+    }
+    function b64ToUtf8(b64) {
+      const bin = atob(String(b64 || "").replace(/\n/g, ""));
+      const bytes = Uint8Array.from(bin, (c) => c.charCodeAt(0));
+      return new TextDecoder().decode(bytes);
+    }
+    function ghHeaders() {
+      return {
+        Accept: "application/vnd.github+json",
+        Authorization: "Bearer " + CONFIG.token,
+        "X-GitHub-Api-Version": "2022-11-28"
+      };
+    }
+    function ghUrl(path) {
+      return "https://api.github.com/repos/" + CONFIG.owner + "/" + CONFIG.repo + "/contents/" + (path || CONFIG.path);
+    }
+    function withDefaults(db) {
+      if (!db || typeof db !== "object") db = {};
+      if (!Array.isArray(db.orders)) db.orders = [];
+      if (!Array.isArray(db.menu)) db.menu = DEFAULT_MENU.map((m) => Object.assign({}, m));
+      if (!db.settings) db.settings = {};
+      if (typeof db.settings.showPopular !== "boolean") db.settings.showPopular = true;
+      if (!db.settings.shopName) db.settings.shopName = "BREW HAVEN";
+      if (typeof db.settings.shopOpen !== "boolean") db.settings.shopOpen = true;
+      if (typeof db.settings.customerNote !== "string") db.settings.customerNote = "";
+      if (!db.settings.closeDetail) db.settings.closeDetail = "ร้านปิดทำการชั่วคราว กรุณากลับมาใหม่ภายหลัง";
+      return db;
+    }
+
+    async function githubRead() {
+      const res = await fetch(ghUrl(), { headers: ghHeaders(), cache: "no-store" });
+      if (res.status === 404) { fileSha = null; return withDefaults({ orders: [], menu: null }); }
+      if (!res.ok) throw new Error("อ่านข้อมูลไม่ได้ (" + res.status + ")");
+      const json = await res.json();
+      fileSha = json.sha;
+      return withDefaults(JSON.parse(b64ToUtf8(json.content)));
+    }
+    async function githubWrite(db, sha) {
+      if (db.orders.length > 300) db.orders = db.orders.slice(0, 300);
+      const res = await fetch(ghUrl(), {
+        method: "PUT",
+        headers: Object.assign({ "Content-Type": "application/json" }, ghHeaders()),
+        body: JSON.stringify({
+          message: "update shop " + new Date().toISOString(),
+          content: utf8ToB64(JSON.stringify(db, null, 2)),
+          sha: sha || undefined,
+          branch: CONFIG.branch
+        })
+      });
+      if (res.status === 409 || res.status === 422) return false;
+      if (!res.ok) throw new Error("บันทึกข้อมูลไม่ได้ (" + res.status + ")");
+      const json = await res.json();
+      fileSha = json.content && json.content.sha;
+      return true;
+    }
+    async function githubUploadImage(file) {
+      const blob = await compressImage(file);
+      const b64 = await blobToB64(blob);
+      const path = "images/menu-" + Date.now() + ".jpg";
+      const res = await fetch(ghUrl(path), {
+        method: "PUT",
+        headers: Object.assign({ "Content-Type": "application/json" }, ghHeaders()),
+        body: JSON.stringify({ message: "upload menu image", content: b64, branch: CONFIG.branch })
+      });
+      if (!res.ok) throw new Error("อัปโหลดรูปไม่ได้ (" + res.status + ")");
+      return "https://raw.githubusercontent.com/" + CONFIG.owner + "/" + CONFIG.repo + "/" + CONFIG.branch + "/" + path;
+    }
+    function localRead() { try { return withDefaults(JSON.parse(localStorage.getItem(LOCAL_KEY))); } catch { return withDefaults({}); } }
+    function localWrite(db) { localStorage.setItem(LOCAL_KEY, JSON.stringify(db)); }
+    async function loadDB() {
+      if (!useGithub) { cache = localRead(); return cache; }
+      cache = await githubRead();
+      return cache;
+    }
+    async function updateDB(mutator) {
+      writing = true;
+      try {
+        if (!useGithub) {
+          const db = localRead();
+          mutator(db);
+          localWrite(db);
+          cache = db;
+          return db;
+        }
+        for (let i = 0; i < 4; i++) {
+          const db = await githubRead();
+          mutator(db);
+          const ok = await githubWrite(db, fileSha);
+          if (ok) { cache = db; return db; }
+        }
+        throw new Error("มีคนอัปเดตพร้อมกัน ลองอีกครั้ง");
+      } finally { writing = false; }
+    }
+
+    function compressImage(file) {
+      return new Promise((resolve, reject) => {
+        const img = new Image();
+        const url = URL.createObjectURL(file);
+        img.onload = () => {
+          const max = 1000;
+          let w = img.width, h = img.height;
+          if (w > max) { h = Math.round(h * max / w); w = max; }
+          const canvas = document.createElement("canvas");
+          canvas.width = w; canvas.height = h;
+          canvas.getContext("2d").drawImage(img, 0, 0, w, h);
+          canvas.toBlob((blob) => { URL.revokeObjectURL(url); resolve(blob || file); }, "image/jpeg", 0.82);
+        };
+        img.onerror = reject;
+        img.src = url;
+      });
+    }
+    function blobToB64(blob) {
+      return new Promise((resolve) => {
+        const r = new FileReader();
+        r.onload = () => resolve(String(r.result).split(",")[1] || "");
+        r.readAsDataURL(blob);
+      });
+    }
+    function fileToDataUrl(file) {
+      return compressImage(file).then((blob) => new Promise((resolve) => {
+        const r = new FileReader();
+        r.onload = () => resolve(r.result);
+        r.readAsDataURL(blob);
+      }));
+    }
+
+    function getCart() { try { return JSON.parse(localStorage.getItem(CART_KEY)) || []; } catch { return []; } }
+    function setCart(cart) { localStorage.setItem(CART_KEY, JSON.stringify(cart)); }
+    function cartCount() { return getCart().reduce((s, i) => s + i.qty, 0); }
+    function renderFloatCart(pop) {
+      const n = cartCount();
+      const el = $("float-cart");
+      $("cart-count").textContent = n;
+      el.classList.toggle("hidden", n === 0);
+      if (pop && n > 0) {
+        el.classList.remove("pop");
+        void el.offsetWidth;
+        el.classList.add("pop");
+      }
+    }
+    function setPill() {
+      const el = $("db-pill");
+      el.className = "db-pill " + (useGithub ? "on" : "off");
+      el.textContent = useGithub ? "เชื่อม GitHub แล้ว · อัปเดตข้ามเครื่อง" : "โหมดเครื่องนี้เท่านั้น · ยังไม่ได้ใส่ token";
+    }
+
+    function priceHtml(m) {
+      const now = finalPrice(m);
+      const disc = Number(m.discount || 0);
+      if (disc > 0) return `<div class="price-row"><span class="price sale">${baht(now)}</span><span class="old-price">${baht(m.price)}</span></div>`;
+      return `<div class="price-row"><span class="price">${baht(now)}</span></div>`;
+    }
+    function menuCard(m) {
+      const disc = Number(m.discount || 0);
+      return `
+        <article class="card">
+          ${m.popular ? '<span class="pop-badge">ยอดนิยม</span>' : ""}
+          ${disc > 0 ? '<span class="sale-badge">ลด ' + baht(disc) + "</span>" : ""}
+          <div class="pic"><img src="${safeImg(m.img)}" alt="${esc(m.name)}" /></div>
+          <h3>${esc(m.name)}</h3>
+          <p>${esc(m.desc)}</p>
+          ${priceHtml(m)}
+          <button class="pick-btn" data-id="${esc(m.id)}">เลือก</button>
+        </article>`;
+    }
+    function renderShopMenu() {
+      const list = sortedMenu().filter(isOpen);
+      const showPop = cache.settings && cache.settings.showPopular !== false;
+      const popular = showPop ? list.filter((m) => m.popular) : [];
+      const other = showPop ? list.filter((m) => !m.popular) : list;
+      $("popular-sec").classList.toggle("hidden", !showPop);
+      $("popular-cards").innerHTML = popular.length ? popular.map(menuCard).join("") : '<p class="empty">ยังไม่มีเมนูยอดนิยมที่เปิดขาย</p>';
+      $("other-sec").classList.toggle("hidden", !other.length);
+      $("other-cards").innerHTML = other.map(menuCard).join("");
+      renderBrand();
+    }
+    function renderCart() {
+      const cart = getCart();
+      const box = $("cart-box");
+      if (!cart.length) box.innerHTML = '<p class="empty">ยังไม่มีสินค้าในตะกร้า กดปุ่มเลือกที่เมนูเพื่อเพิ่ม</p>';
+      else {
+        const total = cart.reduce((s, i) => s + i.price * i.qty, 0);
+        box.innerHTML = cart.map((i) => `
+          <div class="cart-item">
+            <div>
+              <b style="color:var(--cream)">${esc(i.name)}</b>
+              <div class="meta">${baht(i.price)}${i.discount ? " · ลด " + baht(i.discount) : ""}</div>
+            </div>
+            <div class="qty">
+              <button data-act="minus" data-id="${esc(i.id)}">−</button>
+              <span>${i.qty}</span>
+              <button data-act="plus" data-id="${esc(i.id)}">+</button>
+            </div>
+          </div>
+        `).join("") + `<div class="total">รวม ${baht(total)}</div>`;
+      }
+      renderFloatCart();
+    }
+    function addToCart(id) {
+      if (!assertOpen()) return;
+      const item = sortedMenu().find((m) => m.id === id);
+      if (!item || !isOpen(item)) return;
+      const cart = getCart();
+      const found = cart.find((c) => c.id === id);
+      const price = finalPrice(item);
+      if (found) found.qty += 1;
+      else cart.push({ id: item.id, name: item.name, price: price, discount: Number(item.discount || 0), qty: 1 });
+      setCart(cart);
+      renderCart();
+      renderFloatCart(true);
+    }
+    function changeQty(id, delta) {
+      setCart(getCart().map((c) => c.id === id ? { ...c, qty: c.qty + delta } : c).filter((c) => c.qty > 0));
+      renderCart();
+    }
+    function currentPhone() { return normPhone($("lookup-phone").value || localStorage.getItem(PHONE_KEY) || ""); }
+    function renderMyOrders() {
+      const phone = currentPhone();
+      const orders = (cache.orders || []).filter((o) => normPhone(o.customer && o.customer.phone) === phone);
+      const box = $("my-orders");
+      if (!phone || !orders.length) {
+        box.innerHTML = phone ? "<p class='empty' style='text-align:left'>ไม่พบออเดอร์ของเบอร์นี้</p>" : "";
+        return;
+      }
+      box.innerHTML = "<h3 style='color:var(--cream);font-family:var(--serif);text-align:left'>สถานะออเดอร์ของคุณ</h3>" +
+        orders.map((o) => {
+          const st = STATUS[o.status] || STATUS.pending;
+          const msgs = (o.messages || []).map((m) => `<div class="msg">${esc(m.text)}</div>`).join("") || '<div class="meta">ยังไม่มีข้อความจากร้าน</div>';
+          return `<div class="track-card">
+            <div class="meta">ออเดอร์ ${esc(o.id)}</div>
+            <span class="badge ${st.cls}">${st.text}</span>
+            <div class="meta">${o.items.map((i) => esc(i.name) + " x" + i.qty).join(" · ")} · รวม ${baht(o.total)}</div>
+            <div class="msgs">${msgs}</div>
+          </div>`;
+        }).join("");
+    }
+
+    function orderCard(o, mode) {
+      const st = STATUS[o.status] || STATUS.pending;
+      const ended = o.status === "done" || o.status === "cancelled";
+      const msgs = (o.messages || []).map((m) => `<div class="msg">${esc(m.text)}</div>`).join("");
+      const phone = (o.customer && o.customer.phone) || "-";
+      let extra = "";
+      if (mode === "live") {
+        extra = `<div class="actions">
+          <button class="btn" data-st="making" data-id="${esc(o.id)}" ${o.status !== "pending" ? "disabled" : ""}>กดรับ</button>
+          <button class="btn-send" data-st="delivering" data-id="${esc(o.id)}" ${ended || o.status === "pending" ? "disabled" : ""}>กำลังส่ง</button>
+          <button class="btn-ok" data-st="done" data-id="${esc(o.id)}" ${ended || o.status === "pending" ? "disabled" : ""}>ส่งเสร็จแล้ว</button>
+          <button class="btn-danger" data-st="cancelled" data-id="${esc(o.id)}" ${ended ? "disabled" : ""}>ยกเลิกออเดอร์</button>
+        </div>
+        <div class="msgs">${msgs}</div>
+        <div class="chat-row">
+          <input type="text" data-chat="${esc(o.id)}" placeholder="พิมพ์ข้อความถึงลูกค้า" ${ended ? "disabled" : ""} />
+          <button class="btn" data-send="${esc(o.id)}" ${ended ? "disabled" : ""}>ส่ง</button>
+        </div>`;
+      } else if (mode === "trash") {
+        extra = `<div class="actions">
+          <button class="btn-send" data-to="archive" data-id="${esc(o.id)}">ย้ายไปคลังใบสั่ง</button>
+          <button class="btn-danger" data-kill="${esc(o.id)}">ลบถาวร</button>
+        </div>`;
+      } else extra = `<div class="actions"><button class="btn-danger" data-kill="${esc(o.id)}">ลบถาวร</button></div>`;
+      return `<article class="order">
+        <div class="order-head">
+          <div>
+            <b style="color:var(--cream);font-size:18px">${esc(o.id)}</b>
+            <div class="meta">${new Date(o.createdAt).toLocaleString("th-TH")}</div>
+          </div>
+          <span class="badge ${st.cls}">${st.text}</span>
+        </div>
+        <p class="meta" style="margin-top:10px">ลูกค้า: ${esc(o.customer.name)}<br>เบอร์โทร: ${esc(phone)}<br>ที่อยู่: ${esc(o.customer.address)}</p>
+        <p style="margin-top:8px">${o.items.map((i) => esc(i.name) + " x" + i.qty + " (" + baht(i.price * i.qty) + ")").join("<br>")}</p>
+        <p class="total">รวม ${baht(o.total)}</p>
+        ${extra}
+      </article>`;
+    }
+    function counts() {
+      const orders = cache.orders || [];
+      return {
+        orders: orders.filter((o) => !orderBin(o)).length,
+        trash: orders.filter((o) => orderBin(o) === "trash").length,
+        archive: orders.filter((o) => orderBin(o) === "archive").length
+      };
+    }
+    function renderTabs() {
+      const c = counts();
+      $("tabs").innerHTML = [
+        ["orders", "ออเดอร์เข้ามา (" + c.orders + ")"],
+        ["trash", "ถังขยะ (" + c.trash + ")"],
+        ["archive", "คลังใบสั่ง (" + c.archive + ")"],
+        ["menu", "จัดการเมนู"],
+        ["settings", "ตั้งค่าร้าน"]
+      ].map(([id, label]) => `<button class="tab${currentTab === id ? " on" : ""}" data-tab="${id}" type="button">${label}</button>`).join("");
+      $("tab-orders").classList.toggle("hidden", currentTab !== "orders");
+      $("tab-trash").classList.toggle("hidden", currentTab !== "trash");
+      $("tab-archive").classList.toggle("hidden", currentTab !== "archive");
+      $("tab-menu").classList.toggle("hidden", currentTab !== "menu");
+      $("tab-settings").classList.toggle("hidden", currentTab !== "settings");
+    }
+    function renderStaffOrders() {
+      const live = (cache.orders || []).filter((o) => !orderBin(o)).sort((a, b) => b.createdAt - a.createdAt);
+      $("tab-orders").innerHTML = live.length ? live.map((o) => orderCard(o, "live")).join("") : '<p class="empty">ยังไม่มีออเดอร์เข้ามา</p>';
+    }
+    function renderTrash() {
+      const list = (cache.orders || []).filter((o) => orderBin(o) === "trash").sort((a, b) => b.createdAt - a.createdAt);
+      $("tab-trash").innerHTML = `
+        <div class="filter-row" style="margin-top:0">
+          <button class="btn-danger" id="empty-trash" type="button" ${list.length ? "" : "disabled"}>ล้างถังขยะทั้งหมด</button>
+        </div>
+        ${list.length ? list.map((o) => orderCard(o, "trash")).join("") : '<p class="empty">ถังขยะว่าง</p>'}`;
+    }
+    function inDateRange(ts) {
+      if (archFrom && ts < new Date(archFrom + "T00:00:00").getTime()) return false;
+      if (archTo && ts > new Date(archTo + "T23:59:59").getTime()) return false;
+      return true;
+    }
+    function renderArchive() {
+      const list = (cache.orders || []).filter((o) => orderBin(o) === "archive" && inDateRange(o.createdAt)).sort((a, b) => b.createdAt - a.createdAt);
+      $("tab-archive").innerHTML = `
+        <div class="filter-row" style="margin-top:0">
+          <input type="date" id="arch-from" value="${esc(archFrom)}" />
+          <input type="date" id="arch-to" value="${esc(archTo)}" />
+          <button class="btn" id="arch-filter" type="button">กรองวันเวลา</button>
+          <button class="btn-ghost" id="arch-clear" type="button">ล้างตัวกรอง</button>
+          <button class="btn-danger" id="empty-archive" type="button">ลบที่กรองไว้</button>
+        </div>
+        ${list.length ? list.map((o) => orderCard(o, "archive")).join("") : '<p class="empty">ไม่พบใบสั่งในช่วงเวลานี้</p>'}`;
+    }
+    function renderMenuAdmin() {
+      const list = sortedMenu();
+      $("show-popular").checked = cache.settings && cache.settings.showPopular !== false;
+      $("menu-list").innerHTML = list.map((m, i) => `
+        <article class="menu-row" draggable="true" data-drag="${esc(m.id)}">
+          <img class="thumb" src="${safeImg(m.img)}" alt="" />
+          <div>
+            <b style="color:var(--cream)">${esc(m.name)}</b>
+            ${m.popular ? '<span class="badge s-pending" style="margin-left:8px">ยอดนิยม</span>' : ""}
+            ${isOpen(m) ? "" : '<span class="off-tag"> · ปิดขาย</span>'}
+            <div class="meta">${esc(m.desc)}</div>
+            ${priceHtml(m)}
+            <div class="menu-actions">
+              <button class="btn-ghost" data-move="up" data-id="${esc(m.id)}" ${i === 0 ? "disabled" : ""}>ขึ้น</button>
+              <button class="btn-ghost" data-move="down" data-id="${esc(m.id)}" ${i === list.length - 1 ? "disabled" : ""}>ลง</button>
+              <button class="btn-ghost" data-edit="${esc(m.id)}">แก้ไข</button>
+              <button class="btn-ok" data-pop="${esc(m.id)}">${m.popular ? "ปิดยอดนิยม" : "เปิดยอดนิยม"}</button>
+              <button class="btn-send" data-open="${esc(m.id)}">${isOpen(m) ? "ปิดขาย" : "เปิดขาย"}</button>
+              ${Number(m.discount || 0) > 0 ? `<button class="btn-ghost" data-nodisc="${esc(m.id)}">เอาส่วนลดออก</button>` : ""}
+              <button class="btn-danger" data-del="${esc(m.id)}">ลบ</button>
+            </div>
+          </div>
+        </article>
+      `).join("") || '<p class="empty">ยังไม่มีเมนู กดเพิ่มเมนูทางซ้าย</p>';
+    }
+    function refreshStaff() {
+      renderTabs(); renderStaffOrders(); renderTrash(); renderArchive(); renderMenuAdmin(); renderBrand();
+    }
+
+    async function setStatus(id, status) {
+      try {
+        await updateDB((db) => {
+          const o = db.orders.find((x) => x.id === id);
+          if (!o) return;
+          o.status = status;
+          if (status === "done" || status === "cancelled") o.bin = "trash";
+        });
+        refreshStaff(); renderMyOrders(); ping(STATUS[status].text + (status === "done" || status === "cancelled" ? " · ย้ายไปถังขยะแล้ว" : ""));
+      } catch (err) { ping(err.message); }
+    }
+    async function sendMsg(id, text) {
+      if (!text.trim()) return;
+      try {
+        await updateDB((db) => {
+          const o = db.orders.find((x) => x.id === id);
+          if (!o) return;
+          o.messages = o.messages || [];
+          o.messages.push({ from: "staff", text: text.trim(), at: Date.now() });
+        });
+        refreshStaff(); renderMyOrders(); ping("ส่งข้อความถึงลูกค้าแล้ว");
+      } catch (err) { ping(err.message); }
+    }
+    async function moveToArchive(id) {
+      try {
+        await updateDB((db) => { const o = db.orders.find((x) => x.id === id); if (o) o.bin = "archive"; });
+        refreshStaff(); ping("ย้ายไปคลังใบสั่งแล้ว");
+      } catch (err) { ping(err.message); }
+    }
+    async function deleteOrder(id) {
+      if (!confirm("ลบออเดอร์นี้ออกถาวร?")) return;
+      try {
+        await updateDB((db) => { db.orders = db.orders.filter((o) => o.id !== id); });
+        refreshStaff(); ping("ลบออเดอร์แล้ว");
+      } catch (err) { ping(err.message); }
+    }
+    async function emptyBin(type, onlyFiltered) {
+      if (!confirm(type === "trash" ? "ล้างถังขยะทั้งหมด?" : "ลบใบสั่งที่กำลังแสดง?")) return;
+      try {
+        await updateDB((db) => {
+          db.orders = db.orders.filter((o) => {
+            if (orderBin(o) !== type) return true;
+            if (onlyFiltered && type === "archive") return !inDateRange(o.createdAt);
+            return false;
+          });
+        });
+        refreshStaff(); ping("ลบเรียบร้อย");
+      } catch (err) { ping(err.message); }
+    }
+    async function moveMenu(id, dir) {
+      try {
+        await updateDB((db) => {
+          const list = db.menu.sort((a, b) => (a.sort || 0) - (b.sort || 0));
+          const i = list.findIndex((m) => m.id === id);
+          const j = i + dir;
+          if (i < 0 || j < 0 || j >= list.length) return;
+          const t = list[i]; list[i] = list[j]; list[j] = t;
+          list.forEach((m, idx) => { m.sort = idx; });
+        });
+        renderMenuAdmin(); renderShopMenu();
+      } catch (err) { ping(err.message); }
+    }
+    async function dropMenu(fromId, toId) {
+      if (!fromId || !toId || fromId === toId) return;
+      try {
+        await updateDB((db) => {
+          const list = db.menu.sort((a, b) => (a.sort || 0) - (b.sort || 0));
+          const from = list.findIndex((m) => m.id === fromId);
+          const to = list.findIndex((m) => m.id === toId);
+          if (from < 0 || to < 0) return;
+          const [item] = list.splice(from, 1);
+          list.splice(to, 0, item);
+          list.forEach((m, idx) => { m.sort = idx; });
+        });
+        renderMenuAdmin(); renderShopMenu();
+      } catch (err) { ping(err.message); }
+    }
+    async function togglePopular(id) {
+      try {
+        await updateDB((db) => { const m = db.menu.find((x) => x.id === id); if (m) m.popular = !m.popular; });
+        renderMenuAdmin(); renderShopMenu(); ping("อัปเดตเมนูยอดนิยมแล้ว");
+      } catch (err) { ping(err.message); }
+    }
+    async function toggleOpen(id) {
+      try {
+        await updateDB((db) => { const m = db.menu.find((x) => x.id === id); if (m) m.open = m.open === false; });
+        renderMenuAdmin(); renderShopMenu(); ping("อัปเดตการเปิดขายแล้ว");
+      } catch (err) { ping(err.message); }
+    }
+    async function clearDiscount(id) {
+      try {
+        await updateDB((db) => { const m = db.menu.find((x) => x.id === id); if (m) m.discount = 0; });
+        renderMenuAdmin(); renderShopMenu(); ping("เอาส่วนลดออกแล้ว");
+      } catch (err) { ping(err.message); }
+    }
+    async function deleteMenu(id) {
+      if (!confirm("ลบเมนูนี้จากหน้าร้าน?")) return;
+      try {
+        await updateDB((db) => { db.menu = db.menu.filter((m) => m.id !== id); db.menu.forEach((m, i) => { m.sort = i; }); });
+        renderMenuAdmin(); renderShopMenu(); ping("ลบเมนูแล้ว");
+      } catch (err) { ping(err.message); }
+    }
+    function fillMenuForm(item) {
+      const f = $("menu-form");
+      f.id.value = item ? item.id : "";
+      f.name.value = item ? item.name : "";
+      f.desc.value = item ? item.desc : "";
+      f.price.value = item ? item.price : "";
+      f.discount.value = item && item.discount ? item.discount : "";
+      f.img.value = item && !String(item.img).startsWith("data:") ? item.img : "";
+      f.file.value = "";
+      f.popular.checked = item ? !!item.popular : true;
+      f.open.checked = item ? item.open !== false : true;
+      $("menu-form-title").textContent = item ? "แก้ไขเมนู" : "เพิ่มเมนูใหม่";
+      $("menu-save").textContent = item ? "บันทึกการแก้ไข" : "บันทึกเมนู";
+      $("menu-cancel").classList.toggle("hidden", !item);
+      const prev = $("img-preview");
+      if (item && item.img) { prev.src = safeImg(item.img); prev.style.display = "block"; }
+      else { prev.removeAttribute("src"); prev.style.display = "none"; }
+    }
+    function backupJSON() {
+      const blob = new Blob([JSON.stringify(cache, null, 2)], { type: "application/json" });
+      const a = document.createElement("a");
+      const d = new Date();
+      a.href = URL.createObjectURL(blob);
+      a.download = "brewhaven-backup-" + d.getFullYear() + "-" + String(d.getMonth() + 1).padStart(2, "0") + "-" + String(d.getDate()).padStart(2, "0") + ".json";
+      a.click();
+      URL.revokeObjectURL(a.href);
+      ping("ดาวน์โหลดไฟล์สำรองแล้ว");
+    }
+    async function restoreJSON(file) {
+      try {
+        const data = withDefaults(JSON.parse(await file.text()));
+        if (!confirm("กู้คืนข้อมูลจากไฟล์นี้? ข้อมูลปัจจุบันจะถูกแทนที่")) return;
+        await updateDB((db) => { db.orders = data.orders; db.menu = data.menu; db.settings = data.settings; });
+        refreshStaff(); renderShopMenu(); renderMyOrders(); ping("กู้คืนข้อมูลแล้ว");
+      } catch (err) { ping("ไฟล์ไม่ถูกต้อง"); }
+    }
+
+    function askLogin() {
+      if (isStaff()) { location.hash = "staff"; return; }
+      $("login-modal").classList.remove("hidden");
+      $("login-pass").value = "";
+      $("login-pass").focus();
+    }
+    function goLookup() {
+      $("ok-modal").classList.add("hidden");
+      const box = $("lookup-box");
+      box.scrollIntoView({ behavior: "smooth", block: "center" });
+      box.classList.add("flash");
+      $("lookup-phone").focus();
+      setTimeout(() => box.classList.remove("flash"), 1600);
+    }
+    function route() {
+      const wantStaff = location.hash === "#staff";
+      if (wantStaff && !isStaff()) {
+        $("page-customer").classList.remove("hidden");
+        $("page-staff").classList.add("hidden");
+        history.replaceState(null, "", "#customer");
+        return;
+      }
+      $("login-modal").classList.add("hidden");
+      $("page-customer").classList.toggle("hidden", wantStaff);
+      $("page-staff").classList.toggle("hidden", !wantStaff);
+      $("float-cart").style.display = wantStaff ? "none" : "";
+      if (wantStaff) refreshStaff();
+      else { renderShopMenu(); renderCart(); renderMyOrders(); }
+    }
+
+    bindPhone($("order-phone"), $("phone-err"));
+    bindPhone($("lookup-phone"), $("lookup-err"));
+    setPill();
+    renderShopMenu();
+    renderCart();
+    route();
+    loadDB().then(() => { renderShopMenu(); renderMyOrders(); refreshStaff(); renderFloatCart(); }).catch((err) => ping(err.message));
+
+    $("thanks-link").addEventListener("click", () => {
+      secretClicks += 1;
+      if (secretClicks >= 29) { secretClicks = 0; askLogin(); }
+    });
+    $("login-cancel").addEventListener("click", () => $("login-modal").classList.add("hidden"));
+    $("login-form").addEventListener("submit", (e) => {
+      e.preventDefault();
+      if ($("login-pass").value === CONFIG.staffPassword) {
+        sessionStorage.setItem(AUTH_KEY, "1");
+        $("login-modal").classList.add("hidden");
+        location.hash = "staff";
+        ping("เข้าสู่ระบบแล้ว");
+      } else ping("รหัสผ่านไม่ถูกต้อง");
+    });
+    $("logout-btn").addEventListener("click", () => {
+      sessionStorage.removeItem(AUTH_KEY);
+      location.hash = "customer";
+      ping("ออกจากระบบแล้ว");
+    });
+    $("backup-btn").addEventListener("click", backupJSON);
+    $("restore-file").addEventListener("change", (e) => {
+      const file = e.target.files[0];
+      if (file) restoreJSON(file);
+      e.target.value = "";
+    });
+    $("float-cart").addEventListener("click", () => {
+      if (!assertOpen()) return;
+      $("order").scrollIntoView({ behavior: "smooth", block: "start" });
+    });
+    $("ok-gotit").addEventListener("click", goLookup);
+    $("closed-ok").addEventListener("click", () => $("closed-modal").classList.add("hidden"));
+
+    $("note-form").addEventListener("submit", async (e) => {
+      e.preventDefault();
+      const note = $("customer-note").value;
+      try {
+        await updateDB((db) => { db.settings.customerNote = note; });
+        renderBrand(); ping("บันทึกข้อความถึงลูกค้าแล้ว");
+      } catch (err) { ping(err.message); }
+    });
+    $("toggle-open").addEventListener("click", async () => {
+      try {
+        await updateDB((db) => { db.settings.shopOpen = db.settings.shopOpen === false; });
+        renderBrand(); ping(isShopOpen() ? "เปิดร้านแล้ว" : "ปิดร้านแล้ว");
+      } catch (err) { ping(err.message); }
+    });
+    $("close-form").addEventListener("submit", async (e) => {
+      e.preventDefault();
+      const detail = $("close-detail").value.trim();
+      try {
+        await updateDB((db) => { db.settings.closeDetail = detail || "ร้านปิดทำการชั่วคราว กรุณากลับมาใหม่ภายหลัง"; });
+        renderBrand(); ping("บันทึกรายละเอียดปิดร้านแล้ว");
+      } catch (err) { ping(err.message); }
+    });
+    $("shop-form").addEventListener("submit", async (e) => {
+      e.preventDefault();
+      const name = $("shop-name-input").value.trim();
+      if (!name) { ping("กรุณาใส่ชื่อร้าน"); return; }
+      try {
+        await updateDB((db) => { db.settings.shopName = name; });
+        renderBrand(); ping("บันทึกชื่อร้านแล้ว");
+      } catch (err) { ping(err.message); }
+    });
+
+    document.addEventListener("click", (e) => {
+      const tab = e.target.closest("[data-tab]");
+      if (tab) { currentTab = tab.dataset.tab; refreshStaff(); return; }
+      const add = e.target.closest(".pick-btn[data-id]");
+      if (add) addToCart(add.dataset.id);
+      const q = e.target.closest("[data-act]");
+      if (q) changeQty(q.dataset.id, q.dataset.act === "plus" ? 1 : -1);
+      const st = e.target.closest("[data-st]");
+      if (st && !st.disabled) setStatus(st.dataset.id, st.dataset.st);
+      const send = e.target.closest("[data-send]");
+      if (send && !send.disabled) {
+        const input = document.querySelector('[data-chat="' + send.dataset.send + '"]');
+        sendMsg(send.dataset.send, input.value); input.value = "";
+      }
+      const to = e.target.closest("[data-to]");
+      if (to) moveToArchive(to.dataset.id);
+      const kill = e.target.closest("[data-kill]");
+      if (kill) deleteOrder(kill.dataset.kill);
+      if (e.target.id === "empty-trash") emptyBin("trash");
+      if (e.target.id === "empty-archive") emptyBin("archive", true);
+      if (e.target.id === "arch-filter") { archFrom = $("arch-from").value; archTo = $("arch-to").value; renderArchive(); }
+      if (e.target.id === "arch-clear") { archFrom = ""; archTo = ""; renderArchive(); }
+      const mv = e.target.closest("[data-move]");
+      if (mv && !mv.disabled) moveMenu(mv.dataset.id, mv.dataset.move === "up" ? -1 : 1);
+      const ed = e.target.closest("[data-edit]");
+      if (ed) fillMenuForm(sortedMenu().find((m) => m.id === ed.dataset.edit));
+      const pop = e.target.closest("[data-pop]");
+      if (pop) togglePopular(pop.dataset.pop);
+      const op = e.target.closest("[data-open]");
+      if (op) toggleOpen(op.dataset.open);
+      const nd = e.target.closest("[data-nodisc]");
+      if (nd) clearDiscount(nd.dataset.nodisc);
+      const del = e.target.closest("[data-del]");
+      if (del) deleteMenu(del.dataset.del);
+    });
+
+    $("show-popular").addEventListener("change", async () => {
+      const on = $("show-popular").checked;
+      try {
+        await updateDB((db) => { db.settings.showPopular = on; });
+        renderShopMenu(); ping(on ? "เปิดหมวดยอดนิยมแล้ว" : "ปิดหมวดยอดนิยมแล้ว");
+      } catch (err) { ping(err.message); }
+    });
+    document.addEventListener("dragstart", (e) => {
+      const row = e.target.closest("[data-drag]");
+      if (row) dragId = row.dataset.drag;
+    });
+    document.addEventListener("dragover", (e) => { if (e.target.closest("[data-drag]")) e.preventDefault(); });
+    document.addEventListener("drop", (e) => {
+      const row = e.target.closest("[data-drag]");
+      if (!row) return;
+      e.preventDefault();
+      dropMenu(dragId, row.dataset.drag);
+      dragId = null;
+    });
+
+    $("menu-form").img.addEventListener("input", () => {
+      const url = $("menu-form").img.value.trim();
+      const prev = $("img-preview");
+      if (url) { prev.src = url; prev.style.display = "block"; }
+    });
+    $("menu-form").file.addEventListener("change", () => {
+      const file = $("menu-form").file.files[0];
+      if (!file) return;
+      const prev = $("img-preview");
+      prev.src = URL.createObjectURL(file);
+      prev.style.display = "block";
+    });
+    $("menu-cancel").addEventListener("click", () => fillMenuForm(null));
+    $("menu-form").addEventListener("submit", async (e) => {
+      e.preventDefault();
+      const f = e.target;
+      const btn = $("menu-save");
+      btn.disabled = true;
+      try {
+        let img = f.img.value.trim();
+        const file = f.file.files[0];
+        if (file) img = useGithub ? await githubUploadImage(file) : await fileToDataUrl(file);
+        if (!img && !f.id.value) throw new Error("กรุณาใส่รูปเมนู");
+        const item = {
+          id: f.id.value || ("m-" + Date.now()),
+          name: f.name.value.trim(),
+          desc: f.desc.value.trim(),
+          price: Number(f.price.value),
+          discount: Math.max(0, Number(f.discount.value || 0)),
+          img: img,
+          popular: f.popular.checked,
+          open: f.open.checked,
+          sort: 0
+        };
+        await updateDB((db) => {
+          const i = db.menu.findIndex((m) => m.id === item.id);
+          if (i >= 0) {
+            item.sort = db.menu[i].sort;
+            if (!item.img) item.img = db.menu[i].img;
+            db.menu[i] = item;
+          } else {
+            if (!item.img) throw new Error("กรุณาใส่รูปเมนู");
+            item.sort = db.menu.length;
+            db.menu.push(item);
+          }
+        });
+        fillMenuForm(null);
+        renderMenuAdmin();
+        renderShopMenu();
+        ping("บันทึกเมนูแล้ว");
+      } catch (err) { ping(err.message); }
+      finally { btn.disabled = false; }
+    });
+
+    $("order-form").addEventListener("submit", async (e) => {
+      e.preventDefault();
+      if (!assertOpen()) return;
+      const cart = getCart();
+      if (!cart.length) { ping("กรุณาเลือกเมนูก่อน"); return; }
+      const phone = $("order-phone").value;
+      if (!validPhone(phone)) {
+        $("phone-err").classList.remove("hidden");
+        $("order-phone").focus();
+        return;
+      }
+      const data = new FormData(e.target);
+      const btn = $("submit-btn");
+      btn.disabled = true;
+      try {
+        const order = {
+          id: "BH-" + Date.now().toString().slice(-6),
+          createdAt: Date.now(),
+          status: "pending",
+          bin: "",
+          customer: { name: data.get("name").trim(), phone: normPhone(phone), address: data.get("address").trim() },
+          items: cart,
+          total: cart.reduce((s, i) => s + i.price * i.qty, 0),
+          messages: []
+        };
+        await updateDB((db) => { db.orders.unshift(order); });
+        localStorage.setItem(PHONE_KEY, normPhone(phone));
+        $("lookup-phone").value = normPhone(phone);
+        setCart([]); e.target.reset();
+        renderCart(); renderMyOrders();
+        $("ok-modal").classList.remove("hidden");
+      } catch (err) { ping(err.message); }
+      finally { btn.disabled = false; }
+    });
+
+    $("lookup-form").addEventListener("submit", (e) => {
+      e.preventDefault();
+      const phone = $("lookup-phone").value;
+      if (!validPhone(phone)) {
+        $("lookup-err").classList.remove("hidden");
+        $("lookup-phone").focus();
+        return;
+      }
+      localStorage.setItem(PHONE_KEY, normPhone(phone));
+      renderMyOrders();
+    });
+
+    window.addEventListener("hashchange", route);
+    setInterval(async () => {
+      if (writing) return;
+      try {
+        const prev = JSON.stringify(cache);
+        await loadDB();
+        if (JSON.stringify(cache) !== prev) {
+          renderShopMenu(); renderMyOrders();
+          if (location.hash === "#staff" && isStaff()) refreshStaff();
+        }
+      } catch (err) {}
+    }, 3000);
+
+    const savedPhone = localStorage.getItem(PHONE_KEY);
+    if (savedPhone) $("lookup-phone").value = savedPhone;
+  </script>
+</body>
+</html>
